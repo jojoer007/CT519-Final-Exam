@@ -30,7 +30,7 @@ services:
     networks:
       - backend
 
-    container3:
+  container3:
     image: nginx:alpine
     container_name: container3
     volumes:
