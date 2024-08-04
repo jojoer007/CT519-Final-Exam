@@ -1,90 +1,35 @@
-﻿# CT519-Assign5
-จาก Assign #4 ให้นักศึกษา สร้าง Domain name และสมัครขอใช้งาน Cert จาก Lets-Encrypt เพื่อนำมาทำให้ Web server ในงาน Assign #4 รองรับการใช้งานผ่าน HTTPS ได้
+﻿(40 คะแนน) Final Exam
+Chaiyaporn Khemapatapan
+•
+09:10 (แก้ไข 11:41)
+40 คะแนน
+ครบกำหนด 12:20
+ให้นักศึกษาใช้งานระบบ Cloud ของ AWS เพื่อสร้างการให้บริการ ด้วย Docker / Docker Compose ที่มีสถาปัตยกรรมตามรูปแบบนี้
+                     
+                                                             +-------[Web 1]
+                                                             |   
+Internet -------------------- [NginX]------+-------[Web2]
+                                                             |
+                                                            +-------[Web3]
 
-ตัวอย่าง คอนฟิกของไฟล์ nginx.conf ที่ทำให้ ์NginX รองรับการเชื่อมต่อแบบ https
-events {
-#    worker_connections 1024;
-}
+โดยกำหนดให้ Landing page  (https://CT519_XXX.ck2all.com  ) แสดงข้อมูล ดังนี้
 
-http {
-    upstream backend {
-        server ws1:80;
-        server ws2:80;
-    }
+       Student ID: XXXXXXX,  This is landing page from Web Server [1 / 2 / 3]
+        - About              Redirect ไปยัง https://CT519_XXX.ck2all.com/about  บน Web1
+        -  My research  Redirect ไปยัง https://CT519_XXX.ck2all.com/myresearch  บน Web2 
+        -  CT519            Redirect ไปยัง https://CT519_XXX.ck2all.com/ct519 บน Web3
+        -  Github            Redirect ไปยังลิ้งของ Github ของงานที่ทำข้อสอบนี้ (อย่าลืม public share)
 
-    server {
-       listen 80;
+โดยมาจากการทำ Reverse Proxy แบบ Roud Robin ไปยั้ง Web server ทั้ง 3 เครื่อง (Web1, Web2, Web3) 
 
-       server_name ck.signalschool.co;
-       return 301 https://ck.signalschool.co;
-    }
+สำหรับ Link ให้แสดงข้อมูลดังนี้
+https://CT519_XXX.ck2all.com/about              แสดงข้อมูลรูปภาพและรายละเอียดส่วนตัวของนักศึกษา
+https://CT519_XXX.ck2all.com/myresearch   แสดงข้อมูลรูปภาพและแนวทางการวิจัยของนักศึกษา
+https://CT519_XXX.ck2all.com/ct519              แสดงข้อมูลรูปภาพและสรุปความรู้ในการดำเนินการข้อสอบนี้
 
-    server {
-#        listen 80;
-        listen 443 ssl;
-        server_name ck.signalschool.co;  
-        ssl_certificate /etc/ssl/nui-cert.pem;
-        ssl_certificate_key /etc/ssl/nui-private-key.pem;
-        ssl_protocols TLSv1.1 TLSv1.2;
+ให้นักศึกษาสมัครใช้งาน Elastic IP เพื่อใช้งาน IP จริง โดยนักศึกษาต้องแจ้งหมายเลข IP ของแต่ละคนใน comment 
 
+ให้นักศึกษาทำการร้องขอ certificate ที่ Let encrypt เพื่อสร้างการใช้งานโพรโทคอล HTTPS โดยชี้ไปยัง domain 
+       CT519_XXX.ck2all.com  
 
-        location / {
-            proxy_pass http://backend;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
-
-        location /www1 {
-            proxy_pass http://ws1;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
-
-        location /www2 {
-            proxy_pass http://ws2;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        }
-    }
-
-}
-ตัวอย่างไฟล์ docker-compose ที่มี service ของ RP ด้วย nginX และ Web จำนวน 2 เครื่อง (ws1,ws2) ทำงานด้วย nginx เช่นกัน
-
-services:
-  ws1:
-    image: nginx:alpine
-    volumes:
-      - ./ws1:/usr/share/nginx/html
-    networks:
-      - backend
-
-  ws2:
-    image: nginx:alpine
-    volumes:
-      - ./ws2:/usr/share/nginx/html
-    networks:
-      - backend
-
-  reverse_proxy:
-    image: nginx:alpine
-    ports:
-      - "443:443"
-      - "80:80"
-    depends_on:
-      - ws1
-      - ws2
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./ssl:/etc/ssl
-    networks:
-      - frontend
-      - backend
-
-networks:
-  frontend:
-    driver: bridge
-  backend:
-    driver: bridge
+เมื่อ XXX คือรหัส 3 ตัวหลังของนักศึกษา
