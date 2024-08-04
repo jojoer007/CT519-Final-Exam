@@ -1,5 +1,5 @@
 services:
-  reverse_proxy:
+  reverse_proxy_new:
     image: nginx:alpine
     container_name: reverse_proxy_new
     ports:
@@ -12,7 +12,7 @@ services:
       - frontend
       - backend
 
-  container1:
+  web1:
     image: nginx:alpine
     container_name: web1
     volumes:
@@ -21,7 +21,7 @@ services:
     networks:
       - backend
 
-  container2:
+  web2:
     image: nginx:alpine
     container_name: web2
     volumes:
@@ -30,7 +30,7 @@ services:
     networks:
       - backend
 
-  container3:
+  web3:
     image: nginx:alpine
     container_name: web3
     volumes:
