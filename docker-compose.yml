@@ -1,37 +1,29 @@
-
+version: '3'
 services:
-  reverse_proxy:
-    image: nginx:alpine
-    container_name: reverse_proxy
+  nginx:
+    image: nginx:latest
     ports:
-      - "443:443"
       - "80:80"
+      - "443:443"
     volumes:
-      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
-      - /etc/letsencrypt:/etc/letsencrypt  # Mount ไฟล์ SSL certificates
+      - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
-      - frontend
-      - backend
+      - webnet
 
-  container1:
-    build: ./Container1 
-    container_name: container1
-    volumes:
-      - ./Container1/nginx.conf:/etc/nginx/nginx.conf
+  web1:
+    image: your-web1-image
     networks:
-      - backend
+      - webnet
 
-  container2:
-    image: nginx:alpine
-    container_name: container2
-    volumes:
-      - ./Container2:/usr/share/nginx/html
-      - ./Container2/nginx.conf:/etc/nginx/nginx.conf
+  web2:
+    image: your-web2-image
     networks:
-      - backend
+      - webnet
+
+  web3:
+    image: your-web3-image
+    networks:
+      - webnet
 
 networks:
-  frontend:
-    driver: bridge
-  backend:
-    driver: bridge
+  webnet:
